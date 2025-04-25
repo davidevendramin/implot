@@ -133,6 +133,7 @@ You can read releases logs https://github.com/epezent/implot/releases for more d
 #include "implot_internal.h"
 
 #include <stdlib.h>
+#include <cmath>
 
 // Support for pre-1.82 versions. Users on 1.82+ can use 0 (default) flags to mean "all corners" but in order to support older versions we are more explicit.
 #if (IMGUI_VERSION_NUM < 18102) && !defined(ImDrawFlags_RoundCornersAll)
@@ -1998,8 +1999,24 @@ bool UpdateInput(ImPlotPlot& plot) {
                 ImGui::SetKeyOwner(ImGuiKey_MouseWheelY, plot.ID);
                 if (zoom_rate != 0.0f) {
                     float correction = (plot.Hovered && equal_zoom) ? 0.5f : 1.0f;
-                    const double plot_l = x_axis.PixelsToPlot(plot.PlotRect.Min.x - rect_size.x * tx * zoom_rate * correction);
-                    const double plot_r = x_axis.PixelsToPlot(plot.PlotRect.Max.x + rect_size.x * (1 - tx) * zoom_rate * correction);
+                    double plot_l = x_axis.PixelsToPlot(plot.PlotRect.Min.x - rect_size.x * tx * zoom_rate * correction);
+                    double plot_r = x_axis.PixelsToPlot(plot.PlotRect.Max.x + rect_size.x * (1 - tx) * zoom_rate * correction);
+                    if (abs((plot_r - plot_l)) > x_axis.MaxDelta) {
+                        if (x_axis.IsInverted()) {
+							plot_r = plot_l - x_axis.MaxDelta;
+                        }
+                        else {
+							plot_l = plot_r - x_axis.MaxDelta;
+                        }
+                    }
+                    if (abs((plot_r - plot_l)) < x_axis.MinDelta) {
+                        if (x_axis.IsInverted()) {
+                            plot_l = plot_r + x_axis.MaxDelta;
+                        }
+                        else {
+                            plot_r = plot_l + x_axis.MaxDelta;
+                        }
+                    }
                     x_axis.SetMin(x_axis.IsInverted() ? plot_r : plot_l);
                     x_axis.SetMax(x_axis.IsInverted() ? plot_l : plot_r);
                     if (axis_equal && x_axis.OrthoAxis != nullptr)
@@ -2016,8 +2033,24 @@ bool UpdateInput(ImPlotPlot& plot) {
                 ImGui::SetKeyOwner(ImGuiKey_MouseWheelY, plot.ID);
                 if (zoom_rate != 0.0f) {
                     float correction = (plot.Hovered && equal_zoom) ? 0.5f : 1.0f;
-                    const double plot_t = y_axis.PixelsToPlot(plot.PlotRect.Min.y - rect_size.y * ty * zoom_rate * correction);
-                    const double plot_b = y_axis.PixelsToPlot(plot.PlotRect.Max.y + rect_size.y * (1 - ty) * zoom_rate * correction);
+                    double plot_t = y_axis.PixelsToPlot(plot.PlotRect.Min.y - rect_size.y * ty * zoom_rate * correction);
+                    double plot_b = y_axis.PixelsToPlot(plot.PlotRect.Max.y + rect_size.y * (1 - ty) * zoom_rate * correction);
+                    if (abs((plot_t - plot_b)) > y_axis.MaxDelta) {
+                        if (y_axis.IsInverted()) {
+                            plot_t = plot_b - y_axis.MaxDelta;
+                        }
+                        else {
+                            plot_b = plot_t - y_axis.MaxDelta;
+                        }
+                    }
+                    if (abs((plot_t - plot_b)) < y_axis.MinDelta) {
+                        if (y_axis.IsInverted()) {
+                            plot_b = plot_t + y_axis.MaxDelta;
+                        }
+                        else {
+                            plot_t = plot_b + y_axis.MaxDelta;
+                        }
+                    }
                     y_axis.SetMin(y_axis.IsInverted() ? plot_t : plot_b);
                     y_axis.SetMax(y_axis.IsInverted() ? plot_b : plot_t);
                     if (axis_equal && y_axis.OrthoAxis != nullptr)
@@ -3659,6 +3692,16 @@ void SetAxis(ImAxis axis) {
         gp.CurrentPlot->CurrentX = axis;
     else
         gp.CurrentPlot->CurrentY = axis;
+}
+
+void SetAxisLimitsConstraints(ImAxis axis, double min_delta, double max_delta) {
+	ImPlotContext& gp = *GImPlot;
+	IM_ASSERT_USER_ERROR(gp.CurrentPlot != nullptr, "SetAxisLimitsConstraints() needs to be called between BeginPlot() and EndPlot()!");
+	IM_ASSERT_USER_ERROR(axis >= ImAxis_X1 && axis < ImAxis_COUNT, "Axis index out of bounds!");
+	IM_ASSERT_USER_ERROR(gp.CurrentPlot->Axes[axis].Enabled, "Axis is not enabled! Did you forget to call SetupAxis()?");
+	ImPlotAxis& ax = gp.CurrentPlot->Axes[axis];
+	ax.MinDelta = min_delta;
+	ax.MaxDelta = max_delta;
 }
 
 void SetAxes(ImAxis x_idx, ImAxis y_idx) {

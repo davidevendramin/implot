@@ -633,6 +633,8 @@ struct ImPlotAxis
     ImPlotAxis*          OrthoAxis;
     ImPlotRange          ConstraintRange;
     ImPlotRange          ConstraintZoom;
+    double               MinDelta = -INFINITY;
+    double               MaxDelta = +INFINITY;
 
     ImPlotTicker         Ticker;
     ImPlotFormatter      Formatter;
@@ -711,6 +713,8 @@ struct ImPlotAxis
         OrthoAxis        = nullptr;
         ConstraintRange  = ImPlotRange(-INFINITY,INFINITY);
         ConstraintZoom   = ImPlotRange(DBL_MIN,INFINITY);
+        MinDelta         = -INFINITY;
+        MaxDelta         = +INFINITY;
         Ticker.Reset();
     }
 

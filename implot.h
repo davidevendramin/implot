@@ -968,6 +968,9 @@ IMPLOT_API void TagYV(double y, const ImVec4& col, const char* fmt, va_list args
 IMPLOT_API void SetAxis(ImAxis axis);
 IMPLOT_API void SetAxes(ImAxis x_axis, ImAxis y_axis);
 
+// Set the minimum/maximum value the delta of the axis can be
+IMPLOT_API void SetAxisLimitsConstraints(ImAxis axis, double min_delta, double max_delta);
+
 // Convert pixels to a position in the current plot's coordinate system. Passing IMPLOT_AUTO uses the current axes.
 IMPLOT_API ImPlotPoint PixelsToPlot(const ImVec2& pix, ImAxis x_axis = IMPLOT_AUTO, ImAxis y_axis = IMPLOT_AUTO);
 IMPLOT_API ImPlotPoint PixelsToPlot(float x, float y, ImAxis x_axis = IMPLOT_AUTO, ImAxis y_axis = IMPLOT_AUTO);
