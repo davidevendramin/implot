@@ -2011,10 +2011,10 @@ bool UpdateInput(ImPlotPlot& plot) {
                     }
                     if (abs((plot_r - plot_l)) < x_axis.MinDelta) {
                         if (x_axis.IsInverted()) {
-                            plot_l = plot_r + x_axis.MaxDelta;
+                            plot_r = plot_l + x_axis.MinDelta;
                         }
                         else {
-                            plot_r = plot_l + x_axis.MaxDelta;
+                            plot_l = plot_r + x_axis.MinDelta;
                         }
                     }
                     x_axis.SetMin(x_axis.IsInverted() ? plot_r : plot_l);
