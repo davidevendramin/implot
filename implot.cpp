@@ -4879,7 +4879,7 @@ void ItemIcon(ImU32 col) {
     ImVec2 size(txt_size-4,txt_size);
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     ImVec2 pos = window->DC.CursorPos;
-    ImGui::GetWindowDrawList()->AddRectFilled(pos + ImVec2(0,2), pos + size - ImVec2(0,2), col);
+    ImGui::GetWindowDrawList()->AddRectFilled(pos + ImVec2(0,2), pos + size - ImVec2(0,2), col, ImGui::GetStyle().FrameRounding);
     ImGui::Dummy(size);
 }
 
