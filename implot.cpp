@@ -705,7 +705,7 @@ bool ShowLegendEntries(ImPlotItemGroup& items, const ImRect& legend_bb, bool hov
         else
             col_icon = item->Show ? col_item : col_txt_dis;
 
-        DrawList.AddRectFilled(icon_bb.Min, icon_bb.Max, col_icon);
+        DrawList.AddRectFilled(icon_bb.Min, icon_bb.Max, col_icon, ImGui::GetStyle().FrameRounding);
         const char* text_display_end = ImGui::FindRenderedTextEnd(label, nullptr);
         if (label != text_display_end)
             DrawList.AddText(top_left + ImVec2(icon_size, 0), item->Show ? col_txt_hl  : col_txt_dis, label, text_display_end);
